@@ -47,4 +47,8 @@ public class Blob {
 			System.out.println("Write failed");
 		}
 	}
+	
+	public String getSha() {
+		return sha;
+	}
 }
