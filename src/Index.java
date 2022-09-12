@@ -37,7 +37,7 @@ public class Index {
 		}
 	}
 	
-	public void addBlob(String fileName) throws IOException {
+	public void add(String fileName) throws IOException {
 		
 		// make the new blob
 		Blob newBlob = new Blob(fileName);
@@ -47,10 +47,58 @@ public class Index {
 		// add the key/value pair of the original file name and the sha1 string to our dictionary
 		filePaths.put(fileName, newBlob);
 		
-		FileWriter myWriter = new FileWriter("./objects/index");
-		myWriter.write(fileName + " -> " + newBlob.getSha());
-		myWriter.close();
 		
+		
+	}
+	
+	public void remove(String fileName) throws IOException {
+		
+		
+		// delete the actual file
+		File toBeRemoved = new File(fileName); 
+	    if (toBeRemoved.delete()) { 
+	      System.out.println("Deleted the file: " + toBeRemoved.getName());
+	    } else {
+	      System.out.println("Failed to delete the file.");
+	    } 
+	    
+	    // delete the file in objects
+	    Blob fileBlob = filePaths.get(fileName);
+	    
+	    File hashFile = new File("./objects/" + fileBlob.getSha()); 
+	    if (hashFile.delete()) { 
+	      System.out.println("Deleted the file");
+	    } else {
+	      System.out.println("Failed to delete the file.");
+	    } 
+	    
+	    // delete the index file. we will rewrite soon
+	    File indexFile = new File("./objects/index"); 
+	    if (indexFile.delete()) { 
+	      System.out.println("Deleted the index file");
+	    } else {
+	      System.out.println("Failed to delete the file.");
+	    } 
+	    
+	    // rewrite the index file
+	    // make index file
+ 		Path filePathToWrite = Paths.get("./objects/index");
+ 		try {
+ 			Files.writeString(filePathToWrite, "", StandardCharsets.ISO_8859_1);
+ 		}
+ 		catch (IOException exception) {
+ 			System.out.println("Write failed");
+ 		}
+ 		
+ 		// remove from the dictionary
+ 		filePaths.remove(fileName);
+ 		
+ 		// rewrite all the good files
+ 		FileWriter myWriter = new FileWriter("./objects/index");
+ 		for (String name : filePaths.keySet()) {
+ 			myWriter.write(fileName + " : " + filePaths.get(name).getSha());
+ 	 		myWriter.close();
+ 		}
 	}
 	
 	

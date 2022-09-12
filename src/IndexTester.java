@@ -6,8 +6,10 @@ public class IndexTester {
 		
 		Index test = new Index();
 		
-		test.addBlob("test.txt");
+		test.add("test.txt");
+		test.add("test2.txt");
 		
+		test.remove("test.txt");
 	}
 
 }
