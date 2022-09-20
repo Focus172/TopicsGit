@@ -10,7 +10,7 @@ public class IndexTester {
 		test.add("test.txt");
 		test.add("test2.txt");
 		
-		test.remove("test.txt");
+		//test.remove("test.txt");
 	}
 
 }
