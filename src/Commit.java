@@ -31,6 +31,8 @@ public class Commit {
 		// set the date
 		this.date = getDate();
 		
+		this.summary = summary;
+		
 		
 	}
 	
@@ -47,7 +49,7 @@ public class Commit {
 	public String createSha1() {
 		String toSha = pTree + "\n";
 		if (previous != null) {
-			toSha += previous.toString()+ "\n";
+			toSha += "objects/" + previous.toString()+ "\n";
 		}
 		toSha += author+ "\n";
 		toSha += date+ "\n";
@@ -66,10 +68,10 @@ public class Commit {
 		
 		String content = pTree + "\n";
 		if (previous != null) {
-			content += previous.toString()+ "\n";
+			content += "objects/" + previous.toString()+ "\n";
 		}
 		if (next != null) {
-			content += next.toString()+ "\n";
+			content += "objects/" + next.toString()+ "\n";
 		}
 		content += author+ "\n";
 		content += date+ "\n";
