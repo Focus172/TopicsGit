@@ -9,9 +9,12 @@ import java.util.HashMap;
 
 public class Index {
 	
-	private HashMap<String, Blob> filePaths = new HashMap<String, Blob>();
+	public HashMap<String, Blob> filePaths = new HashMap<String, Blob>();
 	
 	public Index () {
+	}
+	
+	public void init() {
 		
 		// Create directory for objects folder
 		File f1 = new File("/Honors Topics Git/objects");
@@ -28,7 +31,7 @@ public class Index {
 		}
 		
 		// make index file
-		Path filePathToWrite = Paths.get("./objects/index");
+		Path filePathToWrite = Paths.get("./index");
 		try {
 			Files.writeString(filePathToWrite, "", StandardCharsets.ISO_8859_1);
 		}
@@ -47,20 +50,19 @@ public class Index {
 		// add the key/value pair of the original file name and the sha1 string to our dictionary
 		filePaths.put(fileName, newBlob);
 		
+		// rewrite all the files
+ 		FileWriter myWriter = new FileWriter("./index");
+ 		for (String name : filePaths.keySet()) {
+ 			myWriter.write(name + " : " + filePaths.get(name).getSha() + "\n");
+ 	 	
+ 		}
+ 		myWriter.close();
+ 		
 		
 		
 	}
 	
 	public void remove(String fileName) throws IOException {
-		
-		
-		// delete the actual file
-		File toBeRemoved = new File(fileName); 
-	    if (toBeRemoved.delete()) { 
-	      System.out.println("Deleted the file: " + toBeRemoved.getName());
-	    } else {
-	      System.out.println("Failed to delete the file.");
-	    } 
 	    
 	    // delete the file in objects
 	    Blob fileBlob = filePaths.get(fileName);
@@ -73,7 +75,7 @@ public class Index {
 	    } 
 	    
 	    // delete the index file. we will rewrite soon
-	    File indexFile = new File("./objects/index"); 
+	    File indexFile = new File("./index"); 
 	    if (indexFile.delete()) { 
 	      System.out.println("Deleted the index file");
 	    } else {
@@ -82,7 +84,7 @@ public class Index {
 	    
 	    // rewrite the index file
 	    // make index file
- 		Path filePathToWrite = Paths.get("./objects/index");
+ 		Path filePathToWrite = Paths.get("./index");
  		try {
  			Files.writeString(filePathToWrite, "", StandardCharsets.ISO_8859_1);
  		}
@@ -94,11 +96,11 @@ public class Index {
  		filePaths.remove(fileName);
  		
  		// rewrite all the good files
- 		FileWriter myWriter = new FileWriter("./objects/index");
+ 		FileWriter myWriter = new FileWriter("./index");
  		for (String name : filePaths.keySet()) {
- 			myWriter.write(fileName + " : " + filePaths.get(name).getSha());
- 	 		myWriter.close();
+ 			myWriter.write(name + " : " + filePaths.get(name).getSha() + "\n");
  		}
+	 	myWriter.close();
 	}
 	
 	
