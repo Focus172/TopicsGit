@@ -1,4 +1,7 @@
+package Testers;
 import java.util.ArrayList;
+
+import code.Tree;
 
 public class TreeTester {
 	public static void main (String [] args) {

@@ -1,3 +1,4 @@
+package Testers;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
@@ -13,6 +14,9 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import code.Index;
+import code.Blob;
 
 class JUnitTester {
 

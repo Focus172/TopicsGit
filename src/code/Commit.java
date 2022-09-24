@@ -1,18 +1,16 @@
-import static org.junit.jupiter.api.Assertions.*;
+package code;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;    
-import java.util.concurrent.TimeUnit;
 
 public class Commit {
 	
-	private String pTree = null;
-	// this boolean will be helpful later
-	boolean pTreeNull = true;
+	private Tree pTree;
 	
 	private String summary;
 	private String author;
@@ -20,39 +18,44 @@ public class Commit {
 	private Commit next = null;
 	private Commit previous = null;
 	
-	public Commit(String pTree, String summary, String author, Commit parent) {
+	public Commit(String summary, String author, Commit parent) {
 		
-		// check if pTree is null
-		if (pTree != null) {
-			this.pTree = pTree;
-			pTreeNull = false;
-		}
-		
-		// set the date
 		this.date = getDate();
-		
 		this.summary = summary;
 		
-		
+		this.pTree = makeTree();
 	}
 	
 	public String getDate() {
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
 		LocalDateTime currentDateTime = LocalDateTime.now();  
-
 		DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
 		String stringDate = currentDateTime.format(formatter);
 		return stringDate;
 	}
 	
+	public Tree makeTree() {
+		ArrayList<String> aL = new ArrayList<String>();
+		
+		//aL.add(thing);
+		
+		return new Tree(aL);
+	}
+	
 	
 	public String createSha1() {
-		String toSha = pTree + "\n";
+		String toSha = "";
+		if (pTree == null) {
+			toSha = "\n";
+		} else {
+			toSha = pTree + "\n";
+		}
+		
+		
 		if (previous != null) {
 			toSha += "objects/" + previous.toString()+ "\n";
 		}
-		toSha += author+ "\n";
-		toSha += date+ "\n";
+		toSha += author + "\n";
+		toSha += date + "\n";
 		toSha += summary + "\n";
 		
 		return GFG.encryptThisString(toSha);
@@ -66,7 +69,13 @@ public class Commit {
 	public void writeToFile() {
 		String fileName = "./objects/" + createSha1();
 		
-		String content = pTree + "\n";
+		String content = "";
+		if (pTree == null) {
+			content = "\n";
+		} else {
+			content = pTree + "\n";
+		}
+		
 		if (previous != null) {
 			content += "objects/" + previous.toString()+ "\n";
 		}

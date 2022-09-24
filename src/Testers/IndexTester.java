@@ -1,4 +1,7 @@
+package Testers;
 import java.io.IOException;
+
+import code.Index;
 
 public class IndexTester {
 
