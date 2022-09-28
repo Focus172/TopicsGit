@@ -18,7 +18,7 @@ public class Tree {
 		for (String str : inputs) { content += str + "\n"; }
 		
 		//puts content through sh1 to get file name
-		String contentHash = GFG.encryptThisString(content);
+		String contentHash = GitUtils.toSha(content);
 		
 		// write new file with sha1 as the name
 		Path treeHash = Paths.get("./objects/" + contentHash);

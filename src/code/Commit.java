@@ -15,15 +15,15 @@ public class Commit {
 	private String summary;
 	private String author;
 	private String date;
-	private Commit next = null;
-	private Commit previous = null;
+	private Commit nextCommit = null;
+	private Commit prevCommit = null;
+	public String fileName;
 	
 	public Commit(String summary, String author, Commit parent) {
-		
 		this.date = getDate();
 		this.summary = summary;
-		
 		this.pTree = makeTree();
+		writeToFile();
 	}
 	
 	public String getDate() {
@@ -37,71 +37,34 @@ public class Commit {
 		ArrayList<String> aL = new ArrayList<String>();
 		
 		//aL.add(thing);
+		//add all relvant files and trees
 		
 		return new Tree(aL);
 	}
 	
-	
-	public String createSha1() {
-		String toSha = "";
-		if (pTree == null) {
-			toSha = "\n";
-		} else {
-			toSha = pTree + "\n";
-		}
-		
-		
-		if (previous != null) {
-			toSha += "objects/" + previous.toString()+ "\n";
-		}
-		toSha += author + "\n";
-		toSha += date + "\n";
-		toSha += summary + "\n";
-		
-		return GFG.encryptThisString(toSha);
-	}
-	
-	
-	public String toString() {
-		return createSha1();
-	}
-	
 	public void writeToFile() {
-		String fileName = "./objects/" + createSha1();
 		
 		String content = "";
-		if (pTree == null) {
-			content = "\n";
-		} else {
-			content = pTree + "\n";
-		}
+		if (pTree == null) { content = "\n"; }
+		else { content = pTree + "\n"; }
 		
-		if (previous != null) {
-			content += "objects/" + previous.toString()+ "\n";
-		}
-		if (next != null) {
-			content += "objects/" + next.toString()+ "\n";
-		}
-		content += author+ "\n";
-		content += date+ "\n";
+		if (prevCommit != null) { content += "objects/" + prevCommit.fileName + "\n"; }
+		if (nextCommit != null) { content += "objects/" + nextCommit.fileName + "\n"; }
+		
+		content += author + "\n";
+		content += date + "\n";
 		content += summary + "\n";
 		
-		Path filePathToWrite = Paths.get(fileName);
-		try {
-			Files.writeString(filePathToWrite, content, StandardCharsets.ISO_8859_1);
-		}
-		catch (IOException exception) {
-			System.out.println("Write failed");
-		}
+		fileName = GitUtils.toSha(content);
+		String filePath = "./objects/" + fileName;
+		Path filePathToWrite = Paths.get(filePath);
+		
+		try { Files.writeString(filePathToWrite, content, StandardCharsets.ISO_8859_1); }
+		catch (IOException e) { e.printStackTrace(); }
 	}
 	
-	// I wasn't sure if we were supposed to write these methods... 
-	public void setPrevious(Commit newPrevious) {
-		previous = newPrevious;
-	}
+	public void setPrevious(Commit newPrevious) { prevCommit = newPrevious; }
 	
-	public void setNext(Commit newNext) {
-		next = newNext;
-	}
-	
+	public void setNext(Commit newNext) { nextCommit = newNext; }
+
 }

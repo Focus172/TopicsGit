@@ -1,13 +1,19 @@
 package code;
+
 // Java program to calculate SHA-1 hash value
  
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.io.File;
  
-public class GFG {
+public class GitUtils {
 	
-    public static String encryptThisString(String input)
+    public static String toSha(String input)
     {
         try {
             // getInstance() method is called with algorithm SHA-1
@@ -39,5 +45,10 @@ public class GFG {
         }
     }
  
-    
+    public static File makeFile(String name, String content) {
+    	String filePath = null;
+    	try { filePath = Files.writeString(Paths.get(name), content, StandardCharsets.ISO_8859_1).toString(); }
+    	catch (Exception e) { e.printStackTrace(); }
+    	return new File(filePath);
+    }
 }

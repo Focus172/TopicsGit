@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Index {
 	
@@ -41,26 +42,20 @@ public class Index {
 		}
 	}
 	
-	public void add(String fileName) throws IOException {
+	public void add(String fileName) {
 		
 		// make the new blob
 		Blob newBlob = new Blob(fileName);
 		
-		String sha = newBlob.getSha();
-		
 		// add the key/value pair of the original file name and the sha1 string to our dictionary
 		filePaths.put(fileName, newBlob);
 		
-		// rewrite all the files
- 		FileWriter myWriter = new FileWriter("./index");
- 		for (String name : filePaths.keySet()) {
- 			myWriter.write(name + " : " + filePaths.get(name).getSha() + "\n");
- 	 	
- 		}
- 		myWriter.close();
- 		
+		//delete the old index
+		new File ("index").delete();
 		
-		
+		// rewrite the index
+		rewriteIndex();
+
 	}
 	
 	public void remove(String fileName) throws IOException {
@@ -68,7 +63,7 @@ public class Index {
 	    // delete the file in objects
 	    Blob fileBlob = filePaths.get(fileName);
 	    
-	    File hashFile = new File("./objects/" + fileBlob.getSha()); 
+	    File hashFile = new File("./objects/" + fileBlob.sha); 
 	    if (hashFile.delete()) { 
 	      System.out.println("Deleted the file");
 	    } else {
@@ -99,12 +94,16 @@ public class Index {
  		// rewrite all the good files
  		FileWriter myWriter = new FileWriter("./index");
  		for (String name : filePaths.keySet()) {
- 			myWriter.write(name + " : " + filePaths.get(name).getSha() + "\n");
+ 			myWriter.write(name + " : " + filePaths.get(name).sha + "\n");
  		}
 	 	myWriter.close();
 	}
 	
-	
-	
+	private void rewriteIndex () {
+		String toWrite = "";
+		Set<String> keys = filePaths.keySet();
+		for (String name : keys) { toWrite += name + " : " + filePaths.get(name).sha + "\n"; }
+		GitUtils.makeFile("./index", toWrite);
+	}
 
 }
