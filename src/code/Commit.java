@@ -1,29 +1,30 @@
 package code;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDateTime;    
 
 public class Commit {
-	
-	private Tree pTree;
 	
 	private String summary;
 	private String author;
 	private String date;
 	private Commit nextCommit = null;
 	private Commit prevCommit = null;
+	
+	public Tree pTree;
 	public String fileName;
+	public String treeName;
 	
 	public Commit(String summary, String author, Commit parent) {
 		this.date = getDate();
 		this.summary = summary;
 		this.pTree = makeTree();
+		treeName = pTree.treeName;
 		writeToFile();
+		
 	}
 	
 	public String getDate() {
@@ -33,11 +34,33 @@ public class Commit {
 		return stringDate;
 	}
 	
+	//index looks like file : sha1
+	//tree looks like type : file sha1
+	
 	public Tree makeTree() {
 		ArrayList<String> aL = new ArrayList<String>();
 		
+		String content = "";
+		try {
+    		BufferedReader reader = new BufferedReader(new FileReader(new File (fileName))); 
+    		while (reader.ready()) {
+    			content = reader.readLine();
+    			aL.add(content);
+    		}
+    		reader.close();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+		
+		//grabs info form index file
+		
+		//adds data in form of 
+		//type : sha1  fileName.extension
 		//aL.add(thing);
-		//add all relvant files and trees
+		
+		//clears index file
+		
+		//add all relevant files and trees
 		
 		return new Tree(aL);
 	}
@@ -57,14 +80,12 @@ public class Commit {
 		
 		fileName = GitUtils.toSha(content);
 		String filePath = "./objects/" + fileName;
-		Path filePathToWrite = Paths.get(filePath);
 		
-		try { Files.writeString(filePathToWrite, content, StandardCharsets.ISO_8859_1); }
-		catch (IOException e) { e.printStackTrace(); }
+		GitUtils.makeFile(filePath, content);
+		
 	}
 	
 	public void setPrevious(Commit newPrevious) { prevCommit = newPrevious; }
-	
 	public void setNext(Commit newNext) { nextCommit = newNext; }
 
 }
