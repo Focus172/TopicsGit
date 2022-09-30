@@ -1,8 +1,6 @@
 package code;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Set;
 
 public class Index {
 	
@@ -35,7 +33,8 @@ public class Index {
 		}
 		
 		//adds index text
-		indexText += "blob : " + fileName + " " + b.sha;
+		if (indexText.equals("")) { indexText += "blob : " + fileName + " " + b.sha; }
+		else { indexText += "\n" + "blob : " + fileName + " " + b.sha; }
 		
 		// rewrite the index
 		rewriteIndex();
@@ -48,10 +47,11 @@ public class Index {
 	    Blob b = filePaths.get(fileName);
 	    
 	    //records change in index file
-	    indexText += fileName + " : " + b.sha;
+	    if (indexText.equals("")) { indexText += "*deleted* blob : " + fileName + " " + b.sha; }
+	    else { indexText += "\n" + "*deleted* blob : " + fileName + " " + b.sha; }
 
 	 	// rewrite the index
-	 	rewriteIndex(); //this can be made better as there is no need for rewriting now, only appenbding and clearing
+	 	rewriteIndex(); //this can be made better as there is no need for rewriting now
 	 	
 	}
 	

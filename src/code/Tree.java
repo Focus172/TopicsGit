@@ -15,11 +15,10 @@ public class Tree {
 		for (String str : inputs) { content += str + "\n"; }
 		
 		//puts content through sh1 to get file name
-		String contentHash = GitUtils.toSha(content);
+		treeName = GitUtils.toSha(content);
 		
 		// write new file with sha1 as the name
-		treeName = "./objects/" + contentHash;
-		GitUtils.makeFile(treeName, content);
+		GitUtils.makeFile("./objects/" + treeName, content);
 		
 	}
 	

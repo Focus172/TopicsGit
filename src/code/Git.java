@@ -7,6 +7,8 @@ public class Git {
 	public File head; //points to most recent commit
 	public File branches; //branch name : sha1 
 	public Index writer;
+	
+	private Commit prev = null;
 
 	public Git () {
 		
@@ -21,7 +23,7 @@ public class Git {
 	
 	public void deleteFile(String fileName) {
 		writer.remove(fileName); //doesn't check for bad input
-		removeFile(fileName);
+		//removeFile(fileName);
 	}
 	
 	public void editFile(String oldFile, String newFile) {
@@ -34,9 +36,19 @@ public class Git {
 		//remove the file
 	}
 	
-	public void commitChanges() {
+	public void commitChanges(String summary, String author) {
+		//add last tree to index file in last position
+		//pass data to commit and let it handle all the problems
+		//String indexData = GitUtils.fileToString("index");
+		//indexData = "tree";
+		
+		Commit c = new Commit(summary, author, prev);
+		prev = c;
+		
+		//make a new commit to store said changes
 		
 		//update head
+		GitUtils.makeFile("head", GitUtils.toSha(GitUtils.toSha(c.fileName)));
 	}
 	
 	public void switchBranch(String branchName) {
