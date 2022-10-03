@@ -45,11 +45,11 @@ class GitTester {
 		
 		
 		test.addFile("test3.txt");
-		test.addFile("test1.txt");
+		//test.addFile("test1.txt");
 		
-		test.commitChanges("made while high on meth", "mama");
+		test.commitChanges("made while high on meth", "dfghjk");
 		
-		test.deleteFile("test1.txt");
+		//test.deleteFile("test1.txt");
 		
 		
 		

@@ -43,12 +43,14 @@ public class Git {
 		//indexData = "tree";
 		
 		Commit c = new Commit(summary, author, prev);
+		//prev.writeToFile();
 		prev = c;
+		
 		
 		//make a new commit to store said changes
 		
 		//update head
-		GitUtils.makeFile("head", GitUtils.toSha(GitUtils.toSha(c.fileName)));
+		GitUtils.makeFile("head", c.fileName);
 	}
 	
 	public void switchBranch(String branchName) {

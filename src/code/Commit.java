@@ -10,7 +10,8 @@ public class Commit {
 	private String summary;
 	private String author;
 	private String date;
-	private Commit nextCommit = null;
+	//private Commit nextCommit = null;
+	private String nextCommit = "";
 	private Commit prevCommit = null;
 	
 	public Tree pTree;
@@ -20,15 +21,24 @@ public class Commit {
 	public Commit(String summary, String author, Commit parent) {
 		//doesn't check for bad input
 		
+		
+		
+		//----
+		//SHA FOR NAME ONLY TAKES PARENT NOT CHILD
+		//----
+		
+		
+		
+		
 		this.date = getDate();
 		this.summary = summary;
 		this.author = author;
 		
-		prevCommit = parent;
-		if (prevCommit != null) { parent.setNext(this); }
-		
 		this.pTree = makeTree();
 		treeName = pTree.treeName;
+		
+		prevCommit = parent;
+		if (prevCommit != null) { parent.setNext(this.getFileName()); }
 		writeToFile();
 	}
 	
@@ -83,21 +93,36 @@ public class Commit {
 		
 		if (prevCommit != null) { content += "objects/" + prevCommit.fileName + "\n"; }
 		else { content += "\n"; }
-		if (nextCommit != null) { content += "objects/" + nextCommit.fileName + "\n"; }
+		if (!nextCommit.equals("")) { content += "objects/" + nextCommit + "\n"; }
 		else { content += "\n"; }
 		
 		content += author + "\n";
 		content += date + "\n";
-		content += summary + "\n";
+		content += summary;
 		
-		fileName = GitUtils.toSha(content);
+		fileName = getFileName();
 		String filePath = "./objects/" + fileName;
 		
 		GitUtils.makeFile(filePath, content);
 		
 	}
 	
+	public String getFileName() {
+		String content = "";
+		if (pTree == null) { content = "\n"; }
+		else { content = treeName + "\n"; }
+		
+		if (prevCommit != null) { content += "objects/" + prevCommit.fileName + "\n"; }
+		else { content += "\n"; }
+		
+		content += author + "\n";
+		content += date + "\n";
+		content += summary;
+		
+		return GitUtils.toSha(content);
+	}
+	
 	public void setPrevious(Commit newPrevious) { prevCommit = newPrevious; } //writeToFile();
-	public void setNext(Commit newNext) { nextCommit = newNext; } //writeToFile();
+	public void setNext(String newNext) { nextCommit = newNext; writeToFile(); } //writeToFile();
 
 }
