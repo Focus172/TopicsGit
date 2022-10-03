@@ -29,16 +29,18 @@ public class Commit {
 		
 		
 		
-		
 		this.date = getDate();
 		this.summary = summary;
 		this.author = author;
 		
+		prevCommit = parent;
+		
 		this.pTree = makeTree();
 		treeName = pTree.treeName;
 		
-		prevCommit = parent;
+		
 		if (prevCommit != null) { parent.setNext(this.getFileName()); }
+		
 		writeToFile();
 	}
 	
@@ -74,15 +76,29 @@ public class Commit {
 		}
 		
 		
+		//make a return list with each nonduplicate add
+		ArrayList<String> finalList = added;
+		
+		
+		//navigate through the tree and check if each entry is part 
+		if (deleted.isEmpty()) {
+			if (prevCommit != null)
+				finalList.add("tree : " + prevCommit.treeName);
+		} else {
+			for (String del : deleted) {
+				//if there is a
+				//check if there exists a tree in per
+			}
+		}
+		
+		
+		
 		//adds data in form of 
 		//type : sha1  fileName.extension
 		
 		//use the added deleted and edited list to construct final list to be passed to tree
 		
-		//clears index file
-		GitUtils.makeFile("index", "");
-		
-		return new Tree(added);
+		return new Tree(finalList);
 	}
 	
 	public void writeToFile() {
@@ -91,9 +107,9 @@ public class Commit {
 		if (pTree == null) { content = "\n"; }
 		else { content = treeName + "\n"; }
 		
-		if (prevCommit != null) { content += "objects/" + prevCommit.fileName + "\n"; }
+		if (prevCommit != null) { content += prevCommit.fileName + "\n"; }
 		else { content += "\n"; }
-		if (!nextCommit.equals("")) { content += "objects/" + nextCommit + "\n"; }
+		if (!nextCommit.equals("")) { content += nextCommit + "\n"; }
 		else { content += "\n"; }
 		
 		content += author + "\n";
@@ -112,7 +128,7 @@ public class Commit {
 		if (pTree == null) { content = "\n"; }
 		else { content = treeName + "\n"; }
 		
-		if (prevCommit != null) { content += "objects/" + prevCommit.fileName + "\n"; }
+		if (prevCommit != null) { content += prevCommit.fileName + "\n"; }
 		else { content += "\n"; }
 		
 		content += author + "\n";

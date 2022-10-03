@@ -45,6 +45,7 @@ public class Git {
 		Commit c = new Commit(summary, author, prev);
 		//prev.writeToFile();
 		prev = c;
+		writer.clearIndex();
 		
 		
 		//make a new commit to store said changes

@@ -23,16 +23,6 @@ class GitTester {
 		//test.delete();
 	}
 
-	/*
-	@BeforeEach
-	void setUp() throws Exception {
-	}
-
-	@AfterEach
-	void tearDown() throws Exception {
-	}
-	*/
-
 	@Test
 	void addFiles() {
 		test.addFile("test1.txt");
@@ -50,9 +40,6 @@ class GitTester {
 		test.commitChanges("made while high on meth", "dfghjk");
 		
 		//test.deleteFile("test1.txt");
-		
-		
-		
 		
 		
 		//test.addFile("test1.txt"); //I dont know if this should work
