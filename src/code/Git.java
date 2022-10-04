@@ -1,6 +1,7 @@
 package code;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class Git {
 	
@@ -8,12 +9,14 @@ public class Git {
 	public Index writer;
 	
 	private Commit prevCommit = null;
+	private HashMap<String, String> branchesMap = new HashMap<String, String>();
 
 	public Git () {
 		
 		//have one index that handles all the adding and removing on blob level
 		writer = new Index(); //this makes object folder
 		
+		GitUtils.makeFile("branches", "");
 	}
 	
 	//dont know what these comments mean but i will keep them
@@ -49,8 +52,21 @@ public class Git {
 		
 	}
 	
+	public void makeBranch(String branchName, String summary, String author) {
+		Commit c = new Commit(summary, author, prevCommit);
+		GitUtils.appendToFile("branches", c.commitName + "\n");
+		
+		branchesMap.put(branchName, c.commitName);
+		
+	}
+	
 	public void switchBranch(String branchName) {
+		//TODO check for bad input
+		
 		//check if branch exists
 		//point head to it	
+		String branchSha = branchesMap.get(branchName);
+		GitUtils.makeFile("head", branchSha);
+		
 	}
 }
