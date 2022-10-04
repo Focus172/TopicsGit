@@ -27,11 +27,11 @@ public class GitUtils {
         catch (NoSuchAlgorithmException e) { throw new RuntimeException(e); }
     }
  
-    public static File makeFile(String name, String content) {
-    	String filePath = null;
+    public static String makeFile(String name, String content) {
+    	String filePath = "";
     	try { filePath = Files.writeString(Paths.get(name), content, StandardCharsets.ISO_8859_1).toString(); }
-    	catch (Exception e) { e.printStackTrace(); }
-    	return new File(filePath);
+    	catch (Exception e) { System.out.println("cringe: " + content); } //e.printStackTrace(); }
+    	return filePath;
     }
     
     public static String fileToString(String fileName) {

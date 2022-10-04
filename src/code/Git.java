@@ -46,7 +46,7 @@ public class Git {
 		writer.clearIndex();
 		
 		//updates head file
-		GitUtils.makeFile("head", c.fileName);
+		GitUtils.makeFile("./head", c.commitName);
 		
 	}
 	

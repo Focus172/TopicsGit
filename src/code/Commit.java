@@ -14,7 +14,6 @@ public class Commit {
 	private Commit prevCommit = null;
 	
 	public Tree pTree;
-	public String fileName;
 	public String treeName;
 	public String commitName;
 	
@@ -53,51 +52,123 @@ public class Commit {
 	public Tree makeTree() {
 		ArrayList<String> added = new ArrayList<String>();
 		ArrayList<String> deleted = new ArrayList<String>();
+		ArrayList<String> edited = new ArrayList<String>();
 		
 		//grabs info form index file
 		String[] content = GitUtils.fileToString("index").split("\n");
 		
-		try {
-			BufferedReader br = new BufferedReader(new FileReader("index"));
-			while (br.ready()) {
-				String line = br.readLine();
-
-				if (line.substring(0, 8).equals("*deleted*")) {
-					deleted.add(line);
-				} else {
-					added.add(line);
-				}
-			}
-			br.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+		//puts each entry into list according to what should be done to it
+		//also trims inputs now that it is known what they do
+		for (String curStr : content) {
+			if (curStr.charAt(0) != '*') { added.add(curStr); }
+			else if (curStr.substring(0, 8).equals("*deleted*")) { deleted.add(curStr.substring(9)); } //may be off by one
+			else { edited.add(curStr.substring(8)); }
 		}
+		
+		//for each entry in deleted go to the tree that is the parent of that node
+		//add each file that that tree references (unless it is part of deleted)
+		//find the tree that references that tree
+		//repeat the process until you a tree that has no parent
+		
+		//this has a few problems which are:
+		//	are adding a file you already have
+		//	are adding a file staged for deletion
+		//	when deleting down tree of a tree you have make sure to delete it when you find it
+		
+		//the translation:
+		//hold a list of added files that starts as only the files expressly added
+		//have a "deepest valid tree" variable
+		//run trough each entry in deleted
+		//first check if it is in your added list (it could have gotten there many ways)
+		//if it is delete it and move on
+		//if it isn't call a method to find what its parent tree is
+		//store the tree that that file references in memory
+		//run through the tree backwards until adding each file that isn't staged for deletion to added you
+		//when you find the deepest valid tree add its children then stop
+		//update the deepest valid tree to the one you have stored in memory
+		//do this for all deleted members then add your deepest valid tree to the list
+		//pass that to the tree maker
+		
+		
+		//lets give it a go
+		
 		
 		
 		//make a return list with each nonduplicate add
-		ArrayList<String> finalList = added;
+		if (prevCommit == null) { return new Tree(added); }
 		
+		ArrayList<String> finalList = added;
+		String deepestTreeName = prevCommit.treeName;
+		
+		//deleted.addAll(edited);
 		
 		//navigate through the tree and check if each entry is part 
-		if (deleted.isEmpty()) {
-			if (prevCommit != null)
-				finalList.add("tree : " + prevCommit.treeName);
-		} else {
-			for (String del : deleted) {
-				//if there is a
-				//check if there exists a tree in per
+		for (String del : deleted) {
+			
+			//try to delete item and if it fails continue
+			if (!finalList.remove(del)) {
+				
+				//gets the parentTree of current deletion
+				String curTree = findParentTree(del);
+				String tempTree = ""; //should get the tree referenced in cur tree
+				
+				while (!curTree.equals(deepestTreeName)) {
+					//add all items of cur tree if they are not already present
+					curTree = findParentTree(curTree);
+				}
+				
+				//updating for future loops
+				deepestTreeName = tempTree;
+				
 			}
+			
 		}
 		
+		/*
+		for (String curAdd : edited) {
+			finalList.add(curAdd);
+		}
+		*/
 		
 		
-		//adds data in form of 
-		//type : sha1  fileName.extension
+		//adds the reference to the tree that covers the most with no conflict
+		finalList.add("tree : " + deepestTreeName);
 		
-		//use the added deleted and edited list to construct final list to be passed to tree
-		
+		//passes final list to make the tree 
 		return new Tree(finalList);
 	}
+	
+	private String findParentTree(String indexEntry) {
+		return recursiveTreeFinder(prevCommit.treeName, indexEntry);
+	}
+	
+	private String recursiveTreeFinder(String curFile, String searchedTerm) {
+		//TODO really really really needs to check for bad input as that is base case
+		
+		//gets current file in form of array of lines
+		String[] lines = GitUtils.fileToString(curFile).split("\n");
+		
+		ArrayList<String> blobs = new ArrayList<String>();
+		String tree = "";
+		//ArrayList trees = new ArrayList<String>();
+		
+		for (String line : lines) {
+			if (line.startsWith("blob")) { blobs.add(line); }
+			else { tree = line; }
+			//else {trees.add(line); }
+		}
+		
+		if (blobs.contains(searchedTerm)) { return curFile; }
+		else {
+			//i think there are cases in which there can be two or more trees
+			//for (String tree : trees) {
+				String treeLocation = tree.substring(tree.indexOf(":") + 1, tree.indexOf(":") + 41);
+				return recursiveTreeFinder(treeLocation, searchedTerm);
+			//}
+		}
+		
+	}
+	
 	
 	public void writeToFile() {
 		
@@ -105,7 +176,7 @@ public class Commit {
 		if (pTree == null) { content = "\n"; }
 		else { content = treeName + "\n"; }
 		
-		if (prevCommit != null) { content += prevCommit.fileName + "\n"; }
+		if (prevCommit != null) { content += prevCommit.commitName + "\n"; }
 		else { content += "\n"; }
 		
 		if (!nextCommit.equals("")) { content += nextCommit + "\n"; }
@@ -131,7 +202,7 @@ public class Commit {
 		if (pTree == null) { content = "\n"; }
 		else { content = treeName + "\n"; }
 		
-		if (prevCommit != null) { content += prevCommit.fileName + "\n"; }
+		if (prevCommit != null) { content += prevCommit.commitName + "\n"; }
 		else { content += "\n"; }
 		
 		content += author + "\n";
