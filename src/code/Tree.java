@@ -11,8 +11,8 @@ public class Tree {
 		//creates content variable
 		String content = "";
 		
-		//pairs should be in format of type : sha1 : fileName.extesion
-		for (String str : inputs) { content += str + "\n"; } //need to make sure finalnew line is not there
+		//pairs should be in format of type : sha1 fileName
+		for (String str : inputs) { content += str + "\n"; } //TODO remove final new line
 		
 		//puts content through sh1 to get file name
 		treeName = GitUtils.toSha(content);
@@ -21,7 +21,6 @@ public class Tree {
 		GitUtils.makeFile("./objects/" + treeName, content);
 		
 	}
-	
 }
 
 

@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
  
 public class GitUtils {
 	
@@ -45,4 +46,16 @@ public class GitUtils {
     		return "fail";
     	}
     }
+    
+    public static void appendToFile(String fileName, String append) {
+    	//needs to check and handle bad input
+    	try {
+    		FileWriter fw = new FileWriter(fileName, true);
+    		fw.write(append);
+    		fw.close();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+    
 }

@@ -10,36 +10,32 @@ public class Commit {
 	private String summary;
 	private String author;
 	private String date;
-	//private Commit nextCommit = null;
-	private String nextCommit = "";
+	private String nextCommit = ""; //uses string for simplicity
 	private Commit prevCommit = null;
 	
 	public Tree pTree;
 	public String fileName;
 	public String treeName;
+	public String commitName;
 	
 	public Commit(String summary, String author, Commit parent) {
 		//doesn't check for bad input
 		
-		
-		
-		//----
-		//SHA FOR NAME ONLY TAKES PARENT NOT CHILD
-		//----
-		
-		
-		
+		//assigning variable
 		this.date = getDate();
 		this.summary = summary;
 		this.author = author;
-		
-		prevCommit = parent;
+		this.prevCommit = parent;
+		this.commitName = getCommitName();
 		
 		this.pTree = makeTree();
 		treeName = pTree.treeName;
 		
 		
-		if (prevCommit != null) { parent.setNext(this.getFileName()); }
+		if (prevCommit != null) {
+			prevCommit.setNext(commitName);
+			prevCommit.writeToFile();
+		}
 		
 		writeToFile();
 	}
@@ -59,6 +55,8 @@ public class Commit {
 		ArrayList<String> deleted = new ArrayList<String>();
 		
 		//grabs info form index file
+		String[] content = GitUtils.fileToString("index").split("\n");
+		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader("index"));
 			while (br.ready()) {
@@ -109,6 +107,7 @@ public class Commit {
 		
 		if (prevCommit != null) { content += prevCommit.fileName + "\n"; }
 		else { content += "\n"; }
+		
 		if (!nextCommit.equals("")) { content += nextCommit + "\n"; }
 		else { content += "\n"; }
 		
@@ -116,15 +115,19 @@ public class Commit {
 		content += date + "\n";
 		content += summary;
 		
-		fileName = getFileName();
-		String filePath = "./objects/" + fileName;
-		
-		GitUtils.makeFile(filePath, content);
+		GitUtils.makeFile("./objects/" + commitName, content);
 		
 	}
 	
-	public String getFileName() {
+	//with how this code seems nearly redundant it feels as if it could be better
+	private String getCommitName() {
+		
+		//----
+		//SHA FOR NAME ONLY TAKES PARENT NOT CHILD
+		//----
+		
 		String content = "";
+		
 		if (pTree == null) { content = "\n"; }
 		else { content = treeName + "\n"; }
 		
@@ -139,6 +142,6 @@ public class Commit {
 	}
 	
 	public void setPrevious(Commit newPrevious) { prevCommit = newPrevious; } //writeToFile();
-	public void setNext(String newNext) { nextCommit = newNext; writeToFile(); } //writeToFile();
+	public void setNext(String newNext) { nextCommit = newNext; } //writeToFile();
 
 }

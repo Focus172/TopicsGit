@@ -6,8 +6,6 @@ public class Index {
 	
 	public HashMap<String, Blob> filePaths = new HashMap<String, Blob>();
 	
-	private String indexText = "";
-	
 	public Index () {
 		init();
 	}
@@ -15,57 +13,49 @@ public class Index {
 	public void init() {
 		
 		// Create directory for objects folder
-		new File("./objects").mkdirs();
+		new File("objects").mkdirs();
 		
 		// make index file
-		GitUtils.makeFile("./index", "");
+		GitUtils.makeFile("index", "");
 	}
 	
 	public void add(String fileName) {
 		
 		// make the new blob if it doesnt already exist
-		Blob b = null;
-		if (filePaths.containsKey(fileName)) {
-			b = filePaths.get(fileName);
-		} else { 
+		
+		Blob b = filePaths.get(fileName);;
+		if (b == null) {
 			b = new Blob(fileName);
 			filePaths.put(fileName, b);
 		}
 		
 		//adds index text
-		if (indexText.equals("")) { indexText += "blob : " + fileName + " " + b.sha; }
-		else { indexText += "\n" + "blob : " + fileName + " " + b.sha; }
-		
-		// rewrite the index
-		rewriteIndex();
+		if (GitUtils.fileToString("index").equals("")) {
+			//this could be parsed by deliminating over " "
+			GitUtils.appendToFile("index", "blob : " + fileName + " " + b.sha);
+		} else {
+			GitUtils.appendToFile("index", "\nblob : " + fileName + " " + b.sha);
+		}
 
 	}
 	
 	public void remove(String fileName) {
 	    
 	    // delete the file by recording it index
+		//doesn't delete from map in case it is referenced again
 	    Blob b = filePaths.get(fileName);
 	    
 	    //records change in index file
-	    if (indexText.equals("")) { indexText += "*deleted* blob : " + fileName + " " + b.sha; }
-	    else { indexText += "\n" + "*deleted* blob : " + fileName + " " + b.sha; }
-
-	 	// rewrite the index
-	 	rewriteIndex(); //this can be made better as there is no need for rewriting now
+	    if (GitUtils.fileToString("index").equals("")) {
+			//this could be parsed by deliminating over " "
+			GitUtils.appendToFile("index", "*deleted* blob : " + fileName + " " + b.sha);
+		} else {
+			GitUtils.appendToFile("index", "\n*deleted* blob : " + fileName + " " + b.sha);
+		}
 	 	
 	}
 	
 	public void clearIndex() {
-		indexText = "";
-		rewriteIndex();
+		GitUtils.makeFile("index", "");
 	}
-	
-	private void rewriteIndex () {
-		
-		//name.substring(0, name.indexOf(':')) + " : " + filePaths.get(name).sha +name.substring(name.indexOf(':')+1) + "\n";
-		
-		new File ("index").delete();
-		GitUtils.makeFile("index", indexText);
-	}
-
 }
