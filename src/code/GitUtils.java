@@ -41,6 +41,7 @@ public class GitUtils {
     		BufferedReader reader = new BufferedReader(new FileReader(new File (fileName))); 
     		while (reader.ready()) { retList.add(reader.readLine()); }
     		reader.close();
+    		System.out.println(retList.toString());
     		return retList;
     	} catch (Exception e) {
     		e.printStackTrace();

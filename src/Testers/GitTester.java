@@ -35,20 +35,29 @@ class GitTester {
 		test.addFile("test3.txt");	
 		test.commitChanges("dos", "Nelson Mandela");
 		
-		/*
 		test.addFile("test4.txt");
 		test.addFile("test5.txt");	
 		test.commitChanges("com 3th", "My Schitzo Friends");
 		
 		test.addFile("test6.txt");
 		test.commitChanges("4st commit", "no author provided");
-		*/
 		
 		test.deleteFile("test2.txt");
 		test.commitChanges("testing deleting", "jonny luck");
 		
+		test.addFile("test4.txt");
+		test.deleteFile("test6.txt");
+		test.commitChanges("garbanzo add", "me");
+		
+		test.deleteFile("test4.txt");
+		test.deleteFile("test3.txt");
+		test.addFile("test6.txt");
+		
+		test.commitChanges("final check", "baaby jes"); //this has a bug somewhere
 		
 		
+		//13e42190bb64965fc9fe9be0e6d4c3a2639e42b2
+		//13e42190bb64965fc9fe9be0e6d4c3a2639e42b2
 		
 	}
 

@@ -55,6 +55,22 @@ public class Index {
 	 	
 	}
 	
+public void edit(String fileName) {
+	    
+	    // delete the file by recording it index
+		//doesn't delete from map in case it is referenced again
+	    Blob b = filePaths.get(fileName);
+	    
+	    //records change in index file
+	    if (GitUtils.fileToString("index").equals("")) {
+			//this could be parsed by deliminating over " "
+			GitUtils.appendToFile("index", "*edited* blob : " + b.sha + " " + fileName);
+		} else {
+			GitUtils.appendToFile("index", "\n*edited* blob : " + b.sha + " " + fileName);
+		}
+	 	
+	}
+	
 	public void clearIndex() {
 		GitUtils.makeFile("index", "");
 	}

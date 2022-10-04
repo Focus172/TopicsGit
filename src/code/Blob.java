@@ -3,8 +3,7 @@ package code;
 public class Blob {
 	
 	public String sha;
-
-	private String content;
+	public String content;
 
 	public Blob (String filePath) {
 		
