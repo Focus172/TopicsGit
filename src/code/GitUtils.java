@@ -38,7 +38,7 @@ public class GitUtils {
     	try {
     		String retString = "";
     		BufferedReader reader = new BufferedReader(new FileReader(new File (fileName))); 
-    		while (reader.ready()) { retString += reader.readLine(); }
+    		while (reader.ready()) { retString += (char)reader.read(); }
     		reader.close();
     		return retString;
     	} catch (Exception e) {

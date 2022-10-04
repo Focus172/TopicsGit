@@ -42,11 +42,6 @@ class GitTester {
 		test.addFile("test6.txt");
 		test.commitChanges("4st commit", "no author provided");
 		
-
-		//test.deleteFile("test1.txt");
-		
-		
-		//test.addFile("test1.txt"); //I dont know if this should work
 	}
 
 }

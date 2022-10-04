@@ -32,9 +32,9 @@ public class Index {
 		//adds index text
 		if (GitUtils.fileToString("index").equals("")) {
 			//this could be parsed by deliminating over " "
-			GitUtils.appendToFile("index", "blob : " + fileName + " " + b.sha);
+			GitUtils.appendToFile("index", "blob : " + b.sha + " " + fileName);
 		} else {
-			GitUtils.appendToFile("index", "\nblob : " + fileName + " " + b.sha);
+			GitUtils.appendToFile("index", "\nblob : " + b.sha + " " + fileName);
 		}
 
 	}
@@ -48,9 +48,9 @@ public class Index {
 	    //records change in index file
 	    if (GitUtils.fileToString("index").equals("")) {
 			//this could be parsed by deliminating over " "
-			GitUtils.appendToFile("index", "*deleted* blob : " + fileName + " " + b.sha);
+			GitUtils.appendToFile("index", "*deleted* blob : " + b.sha + " " + fileName);
 		} else {
-			GitUtils.appendToFile("index", "\n*deleted* blob : " + fileName + " " + b.sha);
+			GitUtils.appendToFile("index", "\n*deleted* blob : " + b.sha + " " + fileName);
 		}
 	 	
 	}
