@@ -1,8 +1,6 @@
 package code;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.time.LocalDateTime;    
 
 public class Commit {
@@ -46,8 +44,8 @@ public class Commit {
 		return stringDate;
 	}
 	
-	//index looks like file : sha1
-	//tree looks like type : file sha1
+	//blobs looks like - blob : sha1 file
+	//trees looks like - tree : sha1
 	
 	public Tree makeTree() {
 		ArrayList<String> added = new ArrayList<String>();
@@ -55,16 +53,22 @@ public class Commit {
 		ArrayList<String> edited = new ArrayList<String>();
 		
 		//grabs info form index file
-		String[] content = GitUtils.fileToString("index").split("\n");
+		ArrayList<String> content = GitUtils.getLines("index");
 		
 		//puts each entry into list according to what should be done to it
 		//also trims inputs now that it is known what they do
 		for (String curStr : content) {
 			if (curStr.charAt(0) != '*') { added.add(curStr); }
-			else if (curStr.substring(0, 8).equals("*deleted*")) { deleted.add(curStr.substring(9)); } //may be off by one
-			else { edited.add(curStr.substring(8)); }
+			else if (curStr.substring(0, 9).equals("*deleted*")) { deleted.add(curStr.substring(10)); } //may be off by one
+			else { edited.add(curStr.substring(9)); }
 		}
 		
+		System.out.print(deleted.toString());
+		
+		//attempt 1
+		
+		
+		/*
 		//for each entry in deleted go to the tree that is the parent of that node
 		//add each file that that tree references (unless it is part of deleted)
 		//find the tree that references that tree
@@ -109,12 +113,25 @@ public class Commit {
 			if (!finalList.remove(del)) {
 				
 				//gets the parentTree of current deletion
-				String curTree = findParentTree(del);
-				String tempTree = ""; //should get the tree referenced in cur tree
+				String curTree = findParentTree(del); //takes a steps back
+				String tempTree = getReferencedTree(curTree); //takes one step forward
 				
 				while (!curTree.equals(deepestTreeName)) {
-					//add all items of cur tree if they are not already present
+					ArrayList<String> toAdd = getBlobs(curTree);
+					for (String add : toAdd) {
+						if (!deleted.contains(add)) {
+							finalList.add(add);
+						}
+					}
 					curTree = findParentTree(curTree);
+				}
+				
+				//TODO once you are at the right tree add all items of this tree in an update references
+				ArrayList<String> toAdd = getBlobs(curTree);
+				for (String add : toAdd) {
+					if (!deleted.contains(add)) {
+						finalList.add(add);
+					}
 				}
 				
 				//updating for future loops
@@ -124,22 +141,100 @@ public class Commit {
 			
 		}
 		
-		/*
 		for (String curAdd : edited) {
 			finalList.add(curAdd);
 		}
-		*/
-		
 		
 		//adds the reference to the tree that covers the most with no conflict
 		finalList.add("tree : " + deepestTreeName);
 		
 		//passes final list to make the tree 
 		return new Tree(finalList);
+		
+		*/
+		
+		//attempt 2
+		
+		//checking will envolve seeing if it exists directly
+		//for each removed object see if it is on the current add list and if it is remove it
+		//if not go to the current tree and check in their
+		//weather it is or isn't add the blobs (that arn't the removed object) and updates the tree
+		
+		//added
+		//deleted
+		//edited
+		
+		ArrayList<String> finalList = added;
+		if (prevCommit == null) { return new Tree(finalList); }
+		String currentTree = prevCommit.treeName;
+		Commit currentCommit = prevCommit;
+		
+		for (String del : deleted) {
+			if (finalList.remove(del)) {
+				//do something
+			} else {
+				boolean notFound = true;
+				while(currentCommit != null && notFound) {
+					//add all items of current tree that are not the thing
+					//if the thing is found then set notFound to false
+					ArrayList<String> curBlobs = getBlobs("objects/" + currentTree);
+					for (String blob : curBlobs) {
+						if (del.equals(blob)) {
+							notFound = false;
+						} else {
+							finalList.add(blob);
+						}
+					}
+					
+					//and update currentCommit to most recent
+					currentCommit = currentCommit.prevCommit;
+					currentTree = currentCommit.treeName;
+					
+				}
+			}
+		}
+		
+		finalList.add("tree : " + currentTree);
+		
+		return new Tree(finalList);
 	}
+	
+	private ArrayList<String> getBlobs(String treeName) {
+		//TODO check for bad input
+		
+		//gets lines from tree file
+		ArrayList<String> lines = GitUtils.getLines(treeName);
+		ArrayList<String> retList = new ArrayList<String>();
+				
+		//if any line starts with blob add it to list
+		for (String line : lines) {
+			if (line.startsWith("blob")) { retList.add(line); }
+		}
+				
+		//if there is no tree return nothing
+		return retList;
+	}
+	
+	/*
 	
 	private String findParentTree(String indexEntry) {
 		return recursiveTreeFinder(prevCommit.treeName, indexEntry);
+	}
+	
+	private String getReferencedTree(String treeName) {
+		//TODO check for bad input
+		
+		//gets lines from tree file
+		String[] lines = GitUtils.fileToString(treeName).split("\n");
+		
+		
+		//if any line starts with tree return the sha1 after it
+		for (String line : lines) {
+			if (line.startsWith("tree")) { return line.substring(line.indexOf(":") + 1, line.indexOf(":") + 41); }
+		}
+		
+		//if there is no tree return nothing
+		return "";
 	}
 	
 	private String recursiveTreeFinder(String curFile, String searchedTerm) {
@@ -148,26 +243,26 @@ public class Commit {
 		//gets current file in form of array of lines
 		String[] lines = GitUtils.fileToString(curFile).split("\n");
 		
+		//parses lines into what is a tree and what is a blob
 		ArrayList<String> blobs = new ArrayList<String>();
 		String tree = "";
-		//ArrayList trees = new ArrayList<String>();
 		
 		for (String line : lines) {
 			if (line.startsWith("blob")) { blobs.add(line); }
 			else { tree = line; }
-			//else {trees.add(line); }
 		}
 		
-		if (blobs.contains(searchedTerm)) { return curFile; }
-		else {
-			//i think there are cases in which there can be two or more trees
-			//for (String tree : trees) {
-				String treeLocation = tree.substring(tree.indexOf(":") + 1, tree.indexOf(":") + 41);
-				return recursiveTreeFinder(treeLocation, searchedTerm);
-			//}
+		//if the searched item is among the things in this tree stop and return this location
+		if (blobs.contains(searchedTerm)) {
+			return curFile;
+		} else {
+			//may be case with more than one tree
+			String treeLocation = tree.substring(tree.indexOf(":") + 1, tree.indexOf(":") + 41);
+			return recursiveTreeFinder(treeLocation, searchedTerm);
 		}
 		
 	}
+	*/
 	
 	
 	public void writeToFile() {
@@ -193,9 +288,7 @@ public class Commit {
 	//with how this code seems nearly redundant it feels as if it could be better
 	private String getCommitName() {
 		
-		//----
 		//SHA FOR NAME ONLY TAKES PARENT NOT CHILD
-		//----
 		
 		String content = "";
 		
@@ -212,7 +305,7 @@ public class Commit {
 		return GitUtils.toSha(content);
 	}
 	
-	public void setPrevious(Commit newPrevious) { prevCommit = newPrevious; } //writeToFile();
-	public void setNext(String newNext) { nextCommit = newNext; } //writeToFile();
+	public void setPrevious(Commit newPrevious) { prevCommit = newPrevious; }
+	public void setNext(String newNext) { nextCommit = newNext; }
 
 }

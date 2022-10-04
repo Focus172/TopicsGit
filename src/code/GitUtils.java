@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -32,6 +33,20 @@ public class GitUtils {
     	try { filePath = Files.writeString(Paths.get(name), content, StandardCharsets.ISO_8859_1).toString(); }
     	catch (Exception e) { System.out.println("cringe: " + content); } //e.printStackTrace(); }
     	return filePath;
+    }
+    
+    public static ArrayList<String> getLines(String fileName) {
+    	try {
+    		ArrayList<String> retList = new ArrayList<String>();
+    		BufferedReader reader = new BufferedReader(new FileReader(new File (fileName))); 
+    		while (reader.ready()) { retList.add(reader.readLine()); }
+    		reader.close();
+    		return retList;
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return null;
+    	}
+    	
     }
     
     public static String fileToString(String fileName) {

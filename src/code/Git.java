@@ -28,8 +28,7 @@ public class Git {
 	}
 	
 	public void deleteFile(String fileName) {
-		//writer.remove(fileName); //doesn't check for bad input
-		//removeFile(fileName);
+		writer.remove(fileName); //doesn't check for bad input
 	}
 	
 	public void editFile(String oldFile, String newFile) {
