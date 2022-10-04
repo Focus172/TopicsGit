@@ -24,6 +24,8 @@ public class Git {
 	//indexData = "tree";
 	
 	public void addFile(String fileName) {
+		//TODO check the curIn list to see if it is a duplicate
+		
 		writer.add(fileName);
 	}
 	
@@ -31,10 +33,8 @@ public class Git {
 		writer.remove(fileName); //doesn't check for bad input
 	}
 	
-	public void editFile(String oldFile, String newFile) {
-		//add *edited* fileName to index
-		//removeFile(oldFile);
-		//addFile(newFile);
+	public void editFile(String fileName) {
+		writer.edit(fileName);
 	}
 	
 	public void commitChanges(String summary, String author) {

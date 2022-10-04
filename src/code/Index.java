@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class Index {
 	
 	public HashMap<String, Blob> filePaths = new HashMap<String, Blob>();
+	public HashMap<String, Blob> currentIn = new HashMap<String, Blob>();
 	
 	public Index () {
 		init();
@@ -27,6 +28,7 @@ public class Index {
 		if (b == null) {
 			b = new Blob(fileName);
 			filePaths.put(fileName, b);
+			currentIn.put(fileName, b);
 		}
 		
 		//adds index text
@@ -44,6 +46,7 @@ public class Index {
 	    // delete the file by recording it index
 		//doesn't delete from map in case it is referenced again
 	    Blob b = filePaths.get(fileName);
+	    currentIn.remove(fileName);
 	    
 	    //records change in index file
 	    if (GitUtils.fileToString("index").equals("")) {
@@ -57,9 +60,8 @@ public class Index {
 	
 public void edit(String fileName) {
 	    
-	    // delete the file by recording it index
-		//doesn't delete from map in case it is referenced again
 	    Blob b = filePaths.get(fileName);
+	    //i dont know if this is supposed to keep it in index
 	    
 	    //records change in index file
 	    if (GitUtils.fileToString("index").equals("")) {

@@ -56,9 +56,14 @@ class GitTester {
 		test.commitChanges("final check", "baaby jes"); 
 		//should have 1, 5 and 6 in it
 		
+		test.addFile("test4.txt");
+		test.addFile("test3.txt");
 		
-		//13e42190bb64965fc9fe9be0e6d4c3a2639e42b2
-		//13e42190bb64965fc9fe9be0e6d4c3a2639e42b2
+		test.commitChanges("redundant add", "the nessisary");
+		
+		test.editFile("test5.txt");
+		test.commitChanges("test edit", "the worker");
+		
 		
 	}
 

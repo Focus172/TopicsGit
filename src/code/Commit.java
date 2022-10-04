@@ -106,9 +106,12 @@ public class Commit {
 		
 		ArrayList<String> finalList = added;
 		if (prevCommit == null) { return new Tree(finalList); }
+		//i think this should get the tree withing the tree
 		String currentTree = prevCommit.treeName;
 		
 		System.out.println(" - " + currentTree);
+		
+		deleted.addAll(edited);
 		
 		for (String del : deleted) {
 			//try to remove it from current list
@@ -141,7 +144,12 @@ public class Commit {
 			}
 		}
 		
-		finalList.add("tree : " + currentTree);
+		for (String edit : edited) {
+			finalList.add(edit);
+		}
+		
+		if (!currentTree.equals(""))
+			finalList.add("tree : " + currentTree);
 		
 		return new Tree(finalList);
 	}
