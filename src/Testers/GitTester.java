@@ -53,7 +53,8 @@ class GitTester {
 		test.deleteFile("test3.txt");
 		test.addFile("test6.txt");
 		
-		test.commitChanges("final check", "baaby jes"); //this has a bug somewhere
+		test.commitChanges("final check", "baaby jes"); 
+		//should have 1, 5 and 6 in it
 		
 		
 		//13e42190bb64965fc9fe9be0e6d4c3a2639e42b2

@@ -116,7 +116,9 @@ public class Commit {
 				//do something
 			} else {
 				boolean notFound = true;
-				while(currentTree.equals("") && notFound) {
+				while(!currentTree.equals("") && notFound) {
+					System.out.println(" : " + currentTree);
+					
 					//add all items of current tree that are not the thing
 					//if the thing is found then set notFound to false
 					ArrayList<String> curBlobs = getBlobs("objects/" + currentTree);
@@ -131,9 +133,9 @@ public class Commit {
 					
 					
 					//and update currentCommit to most recent
-					currentTree = getTree(currentTree);
+					currentTree = getTree("objects/" + currentTree);
 					
-					System.out.println(currentTree);
+					System.out.println(" > " + currentTree);
 					
 				}
 			}
@@ -145,9 +147,9 @@ public class Commit {
 	}
 	
 	private String getTree(String curTree) {
-		ArrayList<String> lines = GitUtils.getLines("./objects/" + treeName);
+		ArrayList<String> lines = GitUtils.getLines(curTree);
 		for (String line : lines) {
-			if (line.startsWith("line")) { return line.substring(line.indexOf(":")+1, line.indexOf(":")+41); }
+			if (line.startsWith("tree")) { return line.substring(line.indexOf(":")+2, line.indexOf(":")+42); }
 		}
 		
 		return "";
